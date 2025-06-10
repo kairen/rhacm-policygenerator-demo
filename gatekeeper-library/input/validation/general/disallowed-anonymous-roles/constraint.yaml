@@ -1,0 +1,20 @@
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sDisallowAnonymous
+metadata:
+  name: deny-anonymous-roles
+spec:
+  enforcementAction: deny
+  match:
+    kinds:
+      - apiGroups: ["rbac.authorization.k8s.io"]
+        kinds: ["ClusterRoleBinding"]
+      - apiGroups: ["rbac.authorization.k8s.io"]
+        kinds: ["RoleBinding"]
+  parameters:
+    allowedRoles:
+    - 'system:oauth-token-deleter'
+    - 'system:openshift:public-info-viewer'
+    - 'system:public-info-viewer'
+    - 'system:scope-impersonation'
+    - 'self-access-reviewer'
+    - 'system:webhook'

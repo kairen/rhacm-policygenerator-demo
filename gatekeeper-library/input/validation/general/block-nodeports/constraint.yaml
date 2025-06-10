@@ -1,0 +1,29 @@
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sBlockNodePorts
+metadata:
+  name: block-ocp4-node-ports
+spec:
+  enforcementAction: deny
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Service"]
+  parameters:
+    portRanges:
+    - {min: 9001,max: 9001}
+    - {min: 9100,max: 9107} 
+    - {min: 9120,max: 9122}
+    - {min: 9191,max: 9194}
+    - {min: 9200,max: 9219}
+    - {min: 9258,max: 9258}
+    - {min: 9300,max: 9301}
+    - {min: 9444,max: 9448}
+    - {min: 9537,max: 9537}
+    - {min: 9641,max: 9644}
+    - {min: 9978,max: 9980}
+    - {min: 10010,max: 10010}
+    - {min: 10250,max: 10259}
+    - {min: 10357,max: 10357}
+    - {min: 10443,max: 10444}
+    - {min: 17697,max: 17697}
+    - {min: 22623,max: 22624}

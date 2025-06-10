@@ -1,0 +1,50 @@
+apiVersion: templates.gatekeeper.sh/v1beta1
+kind: ConstraintTemplate
+metadata:
+  name: k8sroutehttpsonly
+  annotations:
+    metadata.gatekeeper.sh/title: "HTTPS Only"
+    metadata.gatekeeper.sh/version: 1.0.0
+    description: >-
+      Requires Route resources to be HTTPS only.
+spec:
+  crd:
+    spec:
+      names:
+        kind: K8sRouteHttpsOnly
+      validation:
+        openAPIV3Schema:
+          type: object
+          description: >-
+            Requires Route resources to be HTTPS only.
+          properties:
+            tlsOptional:
+              type: boolean
+              description: "When set to `true` the TLS {} is optional, defaults
+              to false."
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package k8sroutehttpsonly
+
+        violation[{"msg": msg}] {
+          input.review.object.kind == "Route"
+          re_match("^route.openshift.io/", input.review.object.apiVersion)
+          route := input.review.object
+          not https_complete(route)
+          not tls_is_optional(route)
+          msg := sprintf("Route should be https. tls configuration is required for %v", [route.metadata.name])
+        }
+
+        https_complete(route) = true {
+          route.spec["tls"]
+          route.spec.tls["termination"]
+          route.spec.tls["insecureEdgeTerminationPolicy"]
+        }
+
+        tls_is_optional(route) = true {
+          parameters := object.get(input, "parameters", {})
+          tlsOptional := object.get(parameters, "tlsOptional", false)
+          is_boolean(tlsOptional)
+          true == tlsOptional
+        }

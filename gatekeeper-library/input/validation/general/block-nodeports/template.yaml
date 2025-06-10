@@ -1,0 +1,57 @@
+apiVersion: templates.gatekeeper.sh/v1beta1
+kind: ConstraintTemplate
+metadata:
+  name: k8sblocknodeports
+  annotations:
+    metadata.gatekeeper.sh/title: "Block NodePorts"
+    metadata.gatekeeper.sh/version: 1.0.0
+    description: >-
+      Disallows all Services with type NodePort with Ports.
+      https://kubernetes.io/docs/concepts/services-networking/service/#nodeport
+spec:
+  crd:
+    spec:
+      names:
+        kind: K8sBlockNodePorts
+      # Schema for the `parameters` field
+      validation:
+        openAPIV3Schema:
+          type: object
+          properties:
+            portRanges:
+                  type: array
+                  description: "A list of port ranges disallowed."
+                  items:
+                    type: object
+                    properties:
+                      min:
+                        type: integer
+                        description: "The minimum node port in the range, inclusive."
+                      max:
+                        type: integer
+                        description: "The maximum node port in the range, inclusive."
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package k8sblocknodeports
+
+        violation[{"msg": msg}] {
+            input.review.kind.kind == "Service"
+            input.review.object.spec.type == "NodePort"
+            
+            nodeport := input.review.object.spec.ports[_].nodePort
+            input_disallowed_nodeport(nodeport)
+            msg := sprintf("The specified node ports are not allowed, service: %v, nodePort: %v. Disallowed values: %v", [input.review.object.metadata.name, nodeport, input.parameters.portRanges])
+        }
+
+        input_disallowed_nodeport(port) {
+          count(input.parameters.portRanges) > 0
+          range := input.parameters.portRanges[_]
+          value_within_range(range, port)
+        }
+
+        value_within_range(range, value) {
+            range.min <= value
+            range.max >= value
+        }
+status: {}

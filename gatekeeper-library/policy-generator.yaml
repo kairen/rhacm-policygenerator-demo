@@ -1,0 +1,116 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PolicyGenerator
+metadata:
+  name: policy-gatekeeper-library
+placementBindingDefaults:
+  name: binding-policy-gatekeeper-library
+policyDefaults:
+  policyAnnotations: {"policy.open-cluster-management.io/disable-templates": "true"}
+  categories:
+    - CM Configuration Management
+  controls: 
+    - CM-2 Baseline Configuration
+  namespace: rhacm-policies
+  remediationAction: enforce
+  severity: medium
+  policySets:
+    - spoke-gatekeeper-library
+  standards:
+    - NIST SP 800-53
+policies:    
+# Validation(General) - Start
+- name: policy-gatekeeper-container-required-resources
+  disabled: false
+  manifests:
+    - path: input/validation/general/container-required-resources/
+- name: policy-gatekeeper-container-required-probes
+  disabled: false
+  manifests:
+    - path: input/validation/general/container-required-probes/
+- name: policy-gatekeeper-container-disallowed-tags
+  disabled: false
+  manifests:
+    - path: input/validation/general/container-disallowed-tags/
+- name: policy-gatekeeper-disallowed-anonymous-roles
+  disabled: false
+  manifests:
+    - path: input/validation/general/disallowed-anonymous-roles/
+- name: policy-gatekeeper-pod-disruption-budget
+  disabled: false
+  manifests:
+    - path: input/validation/general/pod-disruption-budget/
+- name: policy-gatekeeper-block-nodeports
+  disabled: false
+  manifests:
+    - path: input/validation/general/block-nodeports/
+  policySets:
+    - spoke-gatekeeper-library
+    - hub-gatekeeper-library
+- name: policy-gatekeeper-route-https-only
+  disabled: false
+  manifests:
+    - path: input/validation/general/route-https-only/
+  policySets:
+    - spoke-gatekeeper-library
+    - hub-gatekeeper-library
+- name: policy-gatekeeper-verify-deprecated-apis
+  disabled: false
+  manifests:
+    - path: input/validation/general/verify-deprecated-apis/
+  policySets:
+    - spoke-gatekeeper-library
+    - hub-gatekeeper-library
+# Validation(General) - End
+# Validation(PSP) - Start
+- name: policy-gatekeeper-pod-seccomp
+  disabled: false
+  manifests:
+    - path: input/validation/psp/pod-seccomp/
+- name: policy-gatekeeper-pod-capabilities
+  disabled: false
+  manifests:
+    - path: input/validation/psp/pod-capabilities/
+- name: policy-gatekeeper-pod-host-networking-ports
+  disabled: false
+  manifests:
+    - path: input/validation/psp/pod-host-networking-ports/
+- name: policy-gatekeeper-pod-proc-mount
+  disabled: false
+  manifests:
+    - path: input/validation/psp/pod-proc-mount/
+- name: policy-gatekeeper-pod-host-namespace
+  disabled: false
+  manifests:
+    - path: input/validation/psp/pod-host-namespace/
+- name: policy-gatekeeper-pod-privileged-container
+  disabled: false
+  manifests:
+    - path: input/validation/psp/pod-privileged-container/
+- name: policy-gatekeeper-pod-privilege-escalation
+  disabled: false
+  manifests:
+    - path: input/validation/psp/pod-privilege-escalation/
+- name: policy-gatekeeper-pod-forbidden-sysctls
+  disabled: false
+  manifests:
+    - path: input/validation/psp/pod-forbidden-sysctls/
+- name: policy-gatekeeper-pod-volume-types
+  disabled: false
+  manifests:
+    - path: input/validation/psp/pod-volume-types/
+# Validation(PSP) - End
+# Mutation - Start
+- name: policy-gatekeeper-pod-images-alwayspull
+  disabled: true
+  manifests:
+    - path: input/mutation/pod-images-alwayspull/
+# Mutation - End
+policySets:
+  - description: A set of open policy agent gatekeeper admission controls that require best practices to be followed for applications being installed onto the hub cluster
+    name: hub-gatekeeper-library
+    placement:
+      placementPath: input/hub-placement.yaml
+  - description: A set of open policy agent gatekeeper admission controls that require best practices to be followed for applications being installed onto the managed cluster
+    name: spoke-gatekeeper-library
+    placement:
+      placementPath: input/spoke-placement.yaml

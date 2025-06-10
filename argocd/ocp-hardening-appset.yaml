@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: ocp-hardening-policies
+  namespace: openshift-gitops
+spec:
+  generators:
+  - list:
+      elements: 
+      - name: in-cluster
+  template:
+    metadata:
+      name: ocp-hardening-policies-{{name}}
+    spec:
+      project: rhacm-policies
+      source:
+        repoURL: https://github.com/kairen/demo-policygenerator.git
+        targetRevision: main
+        path: ocp-hardening
+      destination:
+        namespace: rhacm-policies
+        server: 'https://kubernetes.default.svc'
+      syncPolicy:
+        syncOptions:
+          - SkipDryRunOnMissingResource=true

@@ -1,0 +1,14 @@
+apiVersion: cluster.open-cluster-management.io/v1beta1
+kind: Placement
+metadata:
+  name: spoke-gatekeeper-library
+  namespace: rhacm-policies
+spec:
+  clusterSets:
+  - spoke-clusters
+  predicates:
+  - requiredClusterSelector:
+      labelSelector:
+        matchExpressions:
+          - {key: vendor, operator: In, values: ["OpenShift"]}
+          - {key: name, operator: NotIn, values: ["local-cluster"]}

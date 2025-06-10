@@ -1,0 +1,8 @@
+apiVersion: operator.openshift.io/v1
+kind: KubeAPIServer
+metadata:
+  name: cluster
+status:
+  conditions:
+    - message: 'All resources encrypted: secrets, configmaps'
+      reason: EncryptionCompleted

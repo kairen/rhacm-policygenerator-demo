@@ -1,0 +1,19 @@
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sPSPCapabilities
+metadata:
+  name: allow-and-drop-caps
+spec:
+  enforcementAction: deny
+  match:
+    excludedNamespaces:
+     - "midlxapc01"
+    kinds:
+    - apiGroups:
+      - ""
+      kinds:
+      - Pod
+  parameters:
+    allowedCapabilities: 
+    - AUDIT_READ
+    requiredDropCapabilities:
+    - SYS_ADMIN

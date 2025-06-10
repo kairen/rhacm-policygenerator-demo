@@ -1,0 +1,56 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PolicyGenerator
+metadata:
+  name: policy-ocp-hardening
+placementBindingDefaults:
+  name: binding-policy-ocp-hardening
+policyDefaults:
+  categories:
+    - CM Configuration Management
+  controls:
+    - CM-6 Configuration Settings
+  policySets:
+    - hub-ocp-hardening
+    - spoke-ocp-hardening
+  namespace: rhacm-policies
+  remediationAction: inform
+  severity: medium
+  standards:
+    - NIST SP 800-53
+policies: 
+- name: policy-cluster-operators-available
+  disabled: false
+  complianceType: mustnothave
+  manifests:
+    - path: input/cluster-operator/cluster-operator-status.yaml
+- name: policy-etcd-must-encryption
+  disabled: false
+  categories:
+    - SC System and Communications Protection
+  controls:
+    - SC-28 Protection Of Information At Rest
+  manifests:
+    - path: input/etcd-encryption/check-apiserver-encryption.yaml
+- name: policy-must-remove-kubeadmin
+  disabled: false
+  complianceType: mustnothave
+  categories:
+    - SC System and Communications Protection
+  controls: 
+    - SC-1 Policy and Procedures
+  manifests:
+    - path: input/kubeadmin/remove-kubeadmin.yaml
+- name: policy-ocp-certs-nearing-expiration
+  categories:
+    - SC System and Communications Protection
+  controls:
+    - SC-12 Cryptographic Key Establishment and Management
+  manifests:
+    - path: input/certs/
+policySets:
+  - name: hub-ocp-hardening
+    placement:
+      placementPath: input/hub-placement.yaml
+  - name: spoke-ocp-hardening
+    placement:
+      placementPath: input/spoke-placement.yaml
