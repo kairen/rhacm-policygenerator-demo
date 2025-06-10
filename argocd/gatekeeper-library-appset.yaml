@@ -10,11 +10,11 @@ spec:
       - name: in-cluster
   template:
     metadata:
-      name: gatekeeper-library-policies-{{name}}
+      name: gatekeeper-library-policies
     spec:
       project: rhacm-policies
       source:
-        repoURL: https://github.com/kairen/demo-policygenerator.git
+        repoURL: https://github.com/kairen/rhacm-policygenerator-demo.git
         targetRevision: main
         path: gatekeeper-library
       destination:

@@ -10,11 +10,11 @@ spec:
       - name: in-cluster
   template:
     metadata:
-      name: ocp-hardening-policies-{{name}}
+      name: ocp-hardening-policies
     spec:
       project: rhacm-policies
       source:
-        repoURL: https://github.com/kairen/demo-policygenerator.git
+        repoURL: https://github.com/kairen/rhacm-policygenerator-demo.git
         targetRevision: main
         path: ocp-hardening
       destination:
